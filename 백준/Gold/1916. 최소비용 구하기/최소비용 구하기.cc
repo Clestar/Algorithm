@@ -1,48 +1,49 @@
-#include<iostream>
-#include<queue>
-#include<vector>
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <cstring>
 using namespace std;
-vector<int> v[1001][1001];
-int dist[1001];
-bool visited[1001];
-int main() {
-	int N, M; cin >> N >> M;
-	for (int i = 0; i <= N; i++) {
-		dist[i] = 1000000000;
-	}
-	
-	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>>pq;
-	for (int i = 0; i < M; i++) {
-		int a, b, c; cin >> a >> b >> c;
-		v[a][b].push_back(c);
-	}
-	int A, B; cin >> A >> B;
-	pq.push({ 0,A });
-	dist[A] = 0;
-	while (!pq.empty()) {
-		int cost = pq.top().first;
-		int x = pq.top().second;
-		if (x == B) {
-			cout << cost << endl;
-			break;
-		}
-		pq.pop();
-		if (visited[x])continue;
-		visited[x] = true;
-		
-		
-		
-		for (int i = 1; i <= N; i++) {
-			if (i == x)continue;
-			for (int j = 0; j < v[x][i].size(); j++) {
-				int n_cost = cost + v[x][i][j];
-				if (!visited[i]) {
-					pq.push({ n_cost,i });
-					dist[i] = n_cost;
+int vis[1003];
+vector<pair<int, int>> v[1003]; 
+void fc(int a) {
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 
-				}
-			}
-			
-		}
-	}
+    pq.push(make_pair(0, a));
+    vis[a] = 0; 
+    while (!pq.empty())
+    {
+        int cost = pq.top().first; 
+        int x = pq.top().second; 
+        pq.pop();
+
+        if (vis[x] < cost)
+            continue;
+
+        for (int i = 0; i < v[x].size(); i++) {
+            int nx = v[x][i].first; 
+            int ncost = cost + v[x][i].second; 
+
+            if (vis[nx] > ncost) {
+                pq.push(make_pair(ncost, nx));
+                vis[nx] = ncost;
+            }
+        }
+    }
+}
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    v[0].push_back(make_pair(0, 0));
+    memset(vis, 98765432, sizeof(vis));
+    for (int i = 0; i < m; i++) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        v[a].push_back(make_pair(b, c));
+    }
+    int st, dt; 
+    cin >> st >> dt;
+    fc(st);
+    cout << vis[dt]; 
+    return 0;
 }
